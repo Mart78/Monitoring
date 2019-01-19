@@ -52,14 +52,11 @@ services:
     build: ./docker/web/php
     volumes:
       - ./:/var/www/html:cached
-    links:
-      - database
-      - composer
-      - rabbitmq
     depends_on:
+      - rabbitmq
       - database
       - composer
-      - rabbitmq
+
     command: php www/index.php rabbitmq:setup-fabric
 
   consumer-alive-check:
@@ -167,6 +164,20 @@ services:
       - rabbitmq
     command: php www/index.php rabbitmq:consumer -w -m 100 rabbitConsumerCheck
 
+  cron-tasks:
+    build: ./docker/web/php
+    restart: always
+    volumes:
+      - ./:/var/www/html:cached
+    links:
+      - database
+      - composer
+      - rabbitmq
+    depends_on:
+      - database
+      - composer
+      - rabbitmq
+    command: bash ./docker/cron-task.sh
 
   composer:
     build: ./docker/web/php
