@@ -1,0 +1,9 @@
+*/1 * * * * /usr/local/bin/php /var/www/html/www/index.php pd:monitoring:check:publish:alive-checks
+*/1 * * * * /usr/local/bin/php /var/www/html/www/index.php pd:monitoring:check:publish:certificate-checks
+*/1 * * * * /usr/local/bin/php /var/www/html/www/index.php pd:monitoring:check:publish:dns-checks
+*/1 * * * * /usr/local/bin/php /var/www/html/www/index.php pd:monitoring:check:publish:http-status-code-checks
+*/1 * * * * /usr/local/bin/php /var/www/html/www/index.php pd:monitoring:check:publish:feed-checks
+*/1 * * * * /usr/local/bin/php /var/www/html/www/index.php pd:monitoring:check:publish:number-value-checks
+*/1 * * * * /usr/local/bin/php /var/www/html/www/index.php pd:monitoring:check:publish:rabbit-consumer-checks
+*/1 * * * * /usr/local/bin/php /var/www/html/www/index.php pd:monitoring:check:publish:rabbit-queue-checks
+*/1 * * * * /usr/local/bin/php /var/www/html/www/index.php pd:monitoring:check:slack-check-statuses

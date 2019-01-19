@@ -1,0 +1,193 @@
+version: '3'
+
+services:
+  web:
+    build: ./docker/web/php
+    ports:
+      - 80
+    volumes:
+      - ./docker/web/apache/test:/etc/apache2/sites-enabled
+      - ./:/var/www/html:cached
+    environment:
+      VIRTUAL_HOST: monitoring.pecka.test
+    links:
+      - database
+      - composer
+      - rabbitmq
+    depends_on:
+      - database
+      - composer
+      - rabbitmq
+
+
+  database:
+    image: mariadb:latest
+    volumes:
+      - database:/var/lib/mysql
+      - ./migrations/structures:/docker-entrypoint-initdb.d:cached,ro
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_USER: monitoring
+      MYSQL_PASSWORD: monitoring
+      MYSQL_DATABASE: monitoring
+
+  adminer:
+    image: adminer:latest
+    ports:
+      - 8080
+    environment:
+      VIRTUAL_HOST: adminer.monitoring.pecka.test
+    links:
+      - database:db
+    depends_on:
+      - database
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    environment:
+      VIRTUAL_HOST: rabbitmq.monitoring.pecka.test
+      VIRTUAL_PORT: 15672
+
+  rabbit-setup:
+    build: ./docker/web/php
+    volumes:
+      - ./:/var/www/html:cached
+    links:
+      - database
+      - composer
+      - rabbitmq
+    depends_on:
+      - database
+      - composer
+      - rabbitmq
+    command: php www/index.php rabbitmq:setup-fabric
+
+  consumer-alive-check:
+    build: ./docker/web/php
+    restart: always
+    volumes:
+      - ./:/var/www/html:cached
+    links:
+      - database
+      - composer
+      - rabbitmq
+    depends_on:
+      - database
+      - composer
+      - rabbitmq
+    command: php www/index.php rabbitmq:consumer -w -m 1000 aliveCheck
+
+  consumer-dns-check:
+    build: ./docker/web/php
+    restart: always
+    volumes:
+      - ./:/var/www/html:cached
+    links:
+      - database
+      - composer
+      - rabbitmq
+    depends_on:
+      - database
+      - composer
+      - rabbitmq
+    command: php www/index.php rabbitmq:consumer -w -m 100 dnsCheck
+
+  consumer-certificate-check:
+    build: ./docker/web/php
+    restart: always
+    volumes:
+      - ./:/var/www/html:cached
+    links:
+      - database
+      - composer
+      - rabbitmq
+    depends_on:
+      - database
+      - composer
+      - rabbitmq
+    command: php www/index.php rabbitmq:consumer -w -m 100 certificateCheck
+
+  consumer-http-status-code-check:
+    build: ./docker/web/php
+    restart: always
+    volumes:
+      - ./:/var/www/html:cached
+    links:
+      - database
+      - composer
+      - rabbitmq
+    depends_on:
+      - database
+      - composer
+      - rabbitmq
+    command: php www/index.php rabbitmq:consumer -w -m 100 httpStatusCodeCheck
+
+  consumer-feed-check:
+    build: ./docker/web/php
+    restart: always
+    volumes:
+      - ./:/var/www/html:cached
+    links:
+      - database
+      - composer
+      - rabbitmq
+    depends_on:
+      - database
+      - composer
+      - rabbitmq
+    command: php www/index.php rabbitmq:consumer -w -m 100 feedCheck
+
+  consumer-rabbit-queue-check:
+    build: ./docker/web/php
+    restart: always
+    volumes:
+      - ./:/var/www/html:cached
+    links:
+      - database
+      - composer
+      - rabbitmq
+    depends_on:
+      - database
+      - composer
+      - rabbitmq
+    command: php www/index.php rabbitmq:consumer -w -m 100 rabbitQueueCheck
+
+  consumer-rabbit-consumer-check:
+    build: ./docker/web/php
+    restart: always
+    volumes:
+      - ./:/var/www/html:cached
+    links:
+      - database
+      - composer
+      - rabbitmq
+    depends_on:
+      - database
+      - composer
+      - rabbitmq
+    command: php www/index.php rabbitmq:consumer -w -m 100 rabbitConsumerCheck
+
+
+  composer:
+    build: ./docker/web/php
+    entrypoint: composer
+    command: install --no-dev
+    volumes:
+      - ./:/var/www/html
+
+  assets:
+    image: gabrielaraujof/nodejs-gulp-bower
+    command: make assets
+    volumes:
+      - ./:/app
+    working_dir: /app
+    links:
+      - composer
+
+volumes:
+  database:
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

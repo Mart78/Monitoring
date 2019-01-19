@@ -1,6 +1,8 @@
 .PHONY: build
 .PHONY: cs
 .PHONY: phpstan
+.PHONY: assets
+.PHONY: prepare-rabbit
 
 
 build:
@@ -15,6 +17,13 @@ build-staging:
 	npm install
 	./node_modules/.bin/gulp
 
+prepare-rabbit:
+    php www/index.php rabbitmq:setup-fabric
+
+
+assets:
+	npm install
+	gulp
 
 cs:
 	git clean -xdf output.cs
