@@ -55,4 +55,12 @@ final class Helpers
 		return FALSE;
 	}
 
+
+	public static function getEnvironments()
+	{
+		$envs = \getenv();
+
+		return \array_change_key_case($envs);
+	}
+
 }

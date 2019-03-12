@@ -2,23 +2,27 @@ version: '3'
 
 services:
   web:
-    build: ./docker/web/php
+    image: monitoring-test:latest
     ports:
       - 80
-    volumes:
-      - ./docker/web/apache/test:/etc/apache2/sites-enabled
-      - ./:/var/www/html:cached
+
     environment:
       VIRTUAL_HOST: monitoring.pecka.test
-    links:
-      - database
-      - composer
-      - rabbitmq
-    depends_on:
-      - database
-      - composer
-      - rabbitmq
+      GITHUB_APP_ID: 83da4ba9e96545b4aa7b
+      GITHUB_SECRET_KEY: 8878a7725f726d260a992288c28705f4760753b4
+      GITHUB_ADMIN_ID: 123
 
+      SLACK_HOOK_URL: ''
+
+      DATABASE_HOST: 'monitoring'
+      DATABASE_USER: 'monitoring'
+      DATABASE_PASSWORD: 'monitoring'
+      DATABASE_NAME: 'monitoring'
+
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
 
   database:
     image: mariadb:latest
@@ -47,153 +51,6 @@ services:
     environment:
       VIRTUAL_HOST: rabbitmq.monitoring.pecka.test
       VIRTUAL_PORT: 15672
-
-  rabbit-setup:
-    build: ./docker/web/php
-    volumes:
-      - ./:/var/www/html:cached
-    depends_on:
-      - rabbitmq
-      - database
-      - composer
-
-    command: php www/index.php rabbitmq:setup-fabric
-
-  consumer-alive-check:
-    build: ./docker/web/php
-    restart: always
-    volumes:
-      - ./:/var/www/html:cached
-    links:
-      - database
-      - composer
-      - rabbitmq
-    depends_on:
-      - database
-      - composer
-      - rabbitmq
-    command: php www/index.php rabbitmq:consumer -w -m 1000 aliveCheck
-
-  consumer-dns-check:
-    build: ./docker/web/php
-    restart: always
-    volumes:
-      - ./:/var/www/html:cached
-    links:
-      - database
-      - composer
-      - rabbitmq
-    depends_on:
-      - database
-      - composer
-      - rabbitmq
-    command: php www/index.php rabbitmq:consumer -w -m 100 dnsCheck
-
-  consumer-certificate-check:
-    build: ./docker/web/php
-    restart: always
-    volumes:
-      - ./:/var/www/html:cached
-    links:
-      - database
-      - composer
-      - rabbitmq
-    depends_on:
-      - database
-      - composer
-      - rabbitmq
-    command: php www/index.php rabbitmq:consumer -w -m 100 certificateCheck
-
-  consumer-http-status-code-check:
-    build: ./docker/web/php
-    restart: always
-    volumes:
-      - ./:/var/www/html:cached
-    links:
-      - database
-      - composer
-      - rabbitmq
-    depends_on:
-      - database
-      - composer
-      - rabbitmq
-    command: php www/index.php rabbitmq:consumer -w -m 100 httpStatusCodeCheck
-
-  consumer-feed-check:
-    build: ./docker/web/php
-    restart: always
-    volumes:
-      - ./:/var/www/html:cached
-    links:
-      - database
-      - composer
-      - rabbitmq
-    depends_on:
-      - database
-      - composer
-      - rabbitmq
-    command: php www/index.php rabbitmq:consumer -w -m 100 feedCheck
-
-  consumer-rabbit-queue-check:
-    build: ./docker/web/php
-    restart: always
-    volumes:
-      - ./:/var/www/html:cached
-    links:
-      - database
-      - composer
-      - rabbitmq
-    depends_on:
-      - database
-      - composer
-      - rabbitmq
-    command: php www/index.php rabbitmq:consumer -w -m 100 rabbitQueueCheck
-
-  consumer-rabbit-consumer-check:
-    build: ./docker/web/php
-    restart: always
-    volumes:
-      - ./:/var/www/html:cached
-    links:
-      - database
-      - composer
-      - rabbitmq
-    depends_on:
-      - database
-      - composer
-      - rabbitmq
-    command: php www/index.php rabbitmq:consumer -w -m 100 rabbitConsumerCheck
-
-  cron-tasks:
-    build: ./docker/web/php
-    restart: always
-    volumes:
-      - ./:/var/www/html:cached
-    links:
-      - database
-      - composer
-      - rabbitmq
-    depends_on:
-      - database
-      - composer
-      - rabbitmq
-    command: bash ./docker/cron-task.sh
-
-  composer:
-    build: ./docker/web/php
-    entrypoint: composer
-    command: install --no-dev
-    volumes:
-      - ./:/var/www/html
-
-  assets:
-    image: gabrielaraujof/nodejs-gulp-bower
-    command: make assets
-    volumes:
-      - ./:/app
-    working_dir: /app
-    links:
-      - composer
 
 volumes:
   database:
