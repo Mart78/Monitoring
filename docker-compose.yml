@@ -14,7 +14,7 @@ services:
 
       SLACK_HOOK_URL: ''
 
-      DATABASE_HOST: 'monitoring'
+      DATABASE_HOST: 'database'
       DATABASE_USER: 'monitoring'
       DATABASE_PASSWORD: 'monitoring'
       DATABASE_NAME: 'monitoring'
