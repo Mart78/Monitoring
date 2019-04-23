@@ -1,0 +1,60 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: consumer-alive-check-
+  namespace: monitoring
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      containers:
+        - name: consumer-alive-check
+          image: jakubenglicky/pecka-monitoring-test:dev
+          imagePullPolicy: Always
+          command: ['sh', '-c', 'php www/index.php rabbitmq:consumer aliveCheck']
+          envFrom:
+            - secretRef:
+                name: monitoring-secrets
+      restartPolicy: OnFailure
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: consumer-dns-check-
+  namespace: monitoring
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      containers:
+        - name: consumer-dns-check
+          image: jakubenglicky/pecka-monitoring-test:dev
+          imagePullPolicy: Always
+          command: ['sh', '-c', 'php www/index.php rabbitmq:consumer dnsCheck']
+          envFrom:
+            - secretRef:
+                name: monitoring-secrets
+      restartPolicy: OnFailure
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: consumer-certificate-check-
+  namespace: monitoring
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      containers:
+        - name: consumer-certificate-check
+          image: jakubenglicky/pecka-monitoring-test:dev
+          imagePullPolicy: Always
+          command: ['sh', '-c', 'php www/index.php rabbitmq:consumer certificateCheck']
+          envFrom:
+            - secretRef:
+                name: monitoring-secrets
+      restartPolicy: OnFailure

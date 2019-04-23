@@ -1,0 +1,63 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cron-alive-check
+  namespace: monitoring
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: cron-alive-check
+              image: jakubenglicky/pecka-monitoring-test:dev
+              envFrom:
+                - secretRef:
+                    name: monitoring-secrets
+              command: ['sh', '-c', 'php www/index.php pd:monitoring:check:publish:alive-checks']
+          restartPolicy: OnFailure
+
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cron-dns-check
+  namespace: monitoring
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: cron-dns-check
+              image: jakubenglicky/pecka-monitoring-test:dev
+              envFrom:
+                - secretRef:
+                    name: monitoring-secrets
+              command: ['sh', '-c', 'php www/index.php pd:monitoring:check:publish:dns-checks']
+          restartPolicy: OnFailure
+
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cron-certificate-check
+  namespace: monitoring
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: cron-certificate-check
+              image: jakubenglicky/pecka-monitoring-test:dev
+              envFrom:
+                - secretRef:
+                    name: monitoring-secrets
+              command: ['sh', '-c', 'php www/index.php pd:monitoring:check:publish:certificate-checks']
+          restartPolicy: OnFailure

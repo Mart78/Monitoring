@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:management
+          ports:
+            - containerPort: 5672 #expose port z dockeru
+            - containerPort: 15672 #expose port z dockeru
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: monitoring
+spec:
+  selector:
+    app: rabbitmq
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 5672
+      name: rabbit
+    - protocol: TCP
+      port: 15672
+      nodePort: 30082
+      name: management

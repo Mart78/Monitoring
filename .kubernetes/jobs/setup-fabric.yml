@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: database-migration-
+  namespace: monitoring
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      containers:
+        - name: database-migration
+          image: jakubenglicky/pecka-monitoring-test:dev
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: monitoring-secrets
+          command: ['sh', '-c', 'php www/index.php rabbitmq:setup-fabric']
+      restartPolicy: Never
