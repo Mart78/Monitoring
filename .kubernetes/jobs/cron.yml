@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: cron-alive-check
-              image: jakubenglicky/pecka-monitoring-test:dev
+              image: jakubenglicky/pecka-monitoring-test:latest
               envFrom:
                 - secretRef:
                     name: monitoring-secrets
@@ -33,7 +33,7 @@ spec:
         spec:
           containers:
             - name: cron-dns-check
-              image: jakubenglicky/pecka-monitoring-test:dev
+              image: jakubenglicky/pecka-monitoring-test:latest
               envFrom:
                 - secretRef:
                     name: monitoring-secrets
@@ -55,7 +55,7 @@ spec:
         spec:
           containers:
             - name: cron-certificate-check
-              image: jakubenglicky/pecka-monitoring-test:dev
+              image: jakubenglicky/pecka-monitoring-test:latest
               envFrom:
                 - secretRef:
                     name: monitoring-secrets

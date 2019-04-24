@@ -14,9 +14,10 @@ spec:
     spec:
       containers:
         - name: app
-          image: jakubenglicky/pecka-monitoring-test:dev
+          image: jakubenglicky/pecka-monitoring-test:latest
           ports:
             - containerPort: 80 #expose port z dockeru
+          imagePullPolicy: Always
           envFrom:
             - secretRef:
                 name: monitoring-secrets

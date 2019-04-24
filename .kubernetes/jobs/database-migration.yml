@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: database-migration
-          image: jakubenglicky/pecka-monitoring-test:dev
+          image: jakubenglicky/pecka-monitoring-test:latest
           imagePullPolicy: Always
           envFrom:
             - secretRef:

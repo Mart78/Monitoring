@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: consumer-alive-check
-          image: jakubenglicky/pecka-monitoring-test:dev
+          image: jakubenglicky/pecka-monitoring-test:latest
           imagePullPolicy: Always
           command: ['sh', '-c', 'php www/index.php rabbitmq:consumer aliveCheck']
           envFrom:
@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: consumer-dns-check
-          image: jakubenglicky/pecka-monitoring-test:dev
+          image: jakubenglicky/pecka-monitoring-test:latest
           imagePullPolicy: Always
           command: ['sh', '-c', 'php www/index.php rabbitmq:consumer dnsCheck']
           envFrom:
@@ -51,7 +51,7 @@ spec:
     spec:
       containers:
         - name: consumer-certificate-check
-          image: jakubenglicky/pecka-monitoring-test:dev
+          image: jakubenglicky/pecka-monitoring-test:latest
           imagePullPolicy: Always
           command: ['sh', '-c', 'php www/index.php rabbitmq:consumer certificateCheck']
           envFrom:
